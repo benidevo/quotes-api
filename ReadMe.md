@@ -135,7 +135,7 @@ The endpoints and responses are described below.
         "errors": null
     }
 
-## Update a job offer
+## Update a quote
 
 ### Request
 
