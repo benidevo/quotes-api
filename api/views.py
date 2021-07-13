@@ -1,18 +1,18 @@
-from os import stat
-
 from django.shortcuts import get_object_or_404
 from rest_framework import status
+from api.permissions import IsAdminOrReadOnly
 from rest_framework.views import APIView
 from api.serializers import QuoteSerializer
 from api.models import Quote
 from utils.response import Response
 
-# Create your views here.
 
 class QuoteView(APIView):
+    serializer_class = QuoteSerializer
+    permission_classes = [IsAdminOrReadOnly]
 
     def post(self, request):
-        serializer = QuoteSerializer(data=request.data)
+        serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(data={'quotes': serializer.data}, status=status.HTTP_201_CREATED)
@@ -20,11 +20,12 @@ class QuoteView(APIView):
 
     def get(self, request):
         quotes = Quote.objects.all().order_by('id')
-        serializer = QuoteSerializer(quotes, many=True)
+        serializer = self.serializer_class(quotes, many=True)
         return Response(data={'quotes': serializer.data}, status=status.HTTP_200_OK)
 
 
 class QuoteDetailView(APIView):
+    permission_classes = [IsAdminOrReadOnly]
     
     def get(self, request, id):
         quote = get_object_or_404(Quote, id=id)
